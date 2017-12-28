@@ -1,5 +1,6 @@
 ﻿using Refactor1.Manager;
 using Refactor1.Service;
+using Refactor1.Service.Request;
 using Refactor1.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -18,12 +19,14 @@ namespace Refactor1
             Console.Read();
         }
 
-        public class AndroidClient
+        public class AndroidClient : BaseClient
         {
+            public AndroidClient() : base(new DroidLoadingImpl(),new DroidNetworkDetector())
+            {
+            }
+
             public async void RunLoginForm()
             {
-                var userManager = new UserManager(new DroidServiceManager());
-                var viewModel = new LoginViewModel(userManager);
                 Console.WriteLine("Android Login Form");
                 Console.Write("Email:");
                 viewModel.Email = Console.ReadLine();
@@ -33,18 +36,37 @@ namespace Refactor1
             }
         }
 
-        public class iOSClient
+    
+        public class iOSClient : BaseClient
         {
+            public iOSClient() : base(new IOSLoadingImpl(), new IOSNetworkDetector())
+            {
+            }
+
             public async void RunLoginForm()
             {
-                var userManager = new UserManager(new iOSServiceManager());
-                var viewModel = new LoginViewModel(userManager);
                 Console.WriteLine("iOS Login Form");
                 Console.Write("Email:");
                 viewModel.Email = Console.ReadLine();
                 Console.Write("Password:");
                 viewModel.Password = Console.ReadLine();
                 await viewModel.Login();
+            }
+        }
+
+        public class BaseClient
+        {
+            private IServiceManager _serviceManager;
+            protected UserManager userManager;
+
+            protected LoginViewModel viewModel;
+
+            public BaseClient(ILoadingDialog loading, INetworkDetector network)
+            {
+                _serviceManager = new ServiceManager(loading, network);
+                userManager = new UserManager(_serviceManager);
+
+                viewModel = new LoginViewModel(userManager);
             }
         }
     }

@@ -52,11 +52,12 @@
     <Compile Include="Model\User.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Service\DroidServiceManager.cs" />
     <Compile Include="Service\BaseServiceManager.cs" />
-    <Compile Include="Service\iOSServiceManager.cs" />
+    <Compile Include="Service\INetworkDetector.cs" />
+    <Compile Include="Service\ServiceManager.cs" />
     <Compile Include="Service\IServiceManager.cs" />
     <Compile Include="Service\Request\AuthenticationRequest.cs" />
+    <Compile Include="Service\ILoadingService.cs" />
     <Compile Include="ViewModel\LoginViewModel.cs" />
   </ItemGroup>
   <ItemGroup>

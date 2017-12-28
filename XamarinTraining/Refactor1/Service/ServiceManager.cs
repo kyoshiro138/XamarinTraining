@@ -10,9 +10,11 @@ using System.Threading.Tasks;
 
 namespace Refactor1.Service
 {
-    public class iOSServiceManager : BaseServiceManager, IServiceManager
+    public class ServiceManager : BaseServiceManager, IServiceManager
     {
-        protected override string BaseUrl => "https://ft-ductuu138.oraclecloud2.dreamfactory.com/";
+        public ServiceManager(ILoadingDialog loading, INetworkDetector network) : base(loading, network)
+        {
+        }
 
         public async Task<User> Authenticate(string email, string password)
         {
@@ -30,25 +32,27 @@ namespace Refactor1.Service
                 return null;
             }
         }
+    }
 
-        #region iOS platform code
-        protected override bool HasNetworkConnection()
-        {
-            // TODO: Check network connection
-            return true;
-        }
+    public class IOSLoadingImpl : ILoadingDialog
+    {
+        public void HideLoadingProgress() { Console.WriteLine("IOS Hide loading"); }
+        public void ShowLoadingProgress() { Console.WriteLine("IOS Show loading"); }
+    }
 
-        protected override void HideLoadingProgress()
-        {
-            // TODO: Hide Progress Dialog
-            Console.WriteLine("Done");
-        }
+    public class DroidLoadingImpl : ILoadingDialog
+    {
+        public void HideLoadingProgress() { Console.WriteLine("Android Hide loading"); }
+        public void ShowLoadingProgress() { Console.WriteLine("Android Show loading"); }
+    }
 
-        protected override void ShowLoadingProgress()
-        {
-            // TODO: Show Progress Dialog
-            Console.Write("Loading...");
-        }
-        #endregion
+    public class DroidNetworkDetector : INetworkDetector
+    {
+        public bool HasNetworkConnection() { return true; }
+    }
+
+    public class IOSNetworkDetector : INetworkDetector
+    {
+        public bool HasNetworkConnection() { return true; }
     }
 }

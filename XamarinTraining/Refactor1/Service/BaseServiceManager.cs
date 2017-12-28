@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Refactor1.Service.Request;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,20 +11,24 @@ namespace Refactor1.Service
 {
     public abstract class BaseServiceManager
     {
-        protected abstract string BaseUrl { get; }
+        protected string BaseUrl => "https://ft-ductuu138.oraclecloud2.dreamfactory.com/";
 
         private HttpClient _client;
+        private ILoadingDialog _loading;
+        private INetworkDetector _networkDetector;
 
-        public BaseServiceManager()
+        public BaseServiceManager(ILoadingDialog loading, INetworkDetector networkDetector)
         {
             _client = new HttpClient(new ModernHttpClient.NativeMessageHandler());
+            _loading = loading;
+            _networkDetector = networkDetector;
         }
 
         public async Task<HttpResponseMessage> InvokeService(HttpMethod method, string url, object bodyObject = null)
         {
-            if (HasNetworkConnection())
+            if (_networkDetector.HasNetworkConnection())
             {
-                ShowLoadingProgress();
+                _loading.ShowLoadingProgress();
                 HttpResponseMessage responseMessage = null;
                 try
                 {
@@ -39,7 +44,7 @@ namespace Refactor1.Service
                 {
                     Console.WriteLine(ex.Message);
                 }
-                HideLoadingProgress();
+                _loading.HideLoadingProgress();
                 return responseMessage;
             }
             else
@@ -48,11 +53,6 @@ namespace Refactor1.Service
                 return null;
             }
         }
-
-        protected abstract void ShowLoadingProgress();
-
-        protected abstract void HideLoadingProgress();
-
-        protected abstract bool HasNetworkConnection();
+       
     }
 }
