@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Refactor1.Service.Request;
 
 namespace Refactor1.Manager
 {
@@ -19,7 +20,8 @@ namespace Refactor1.Manager
 
         public async Task<User> Authenticate(string email,string password)
         {
-            return await _serviceManager.Authenticate(email, password);
+            var request = new AuthenticationRequest() { Email = email, Password = password };
+            return await _serviceManager.Authenticate(request);
         }
     }
 }
