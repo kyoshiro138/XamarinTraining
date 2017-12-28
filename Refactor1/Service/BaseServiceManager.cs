@@ -1,6 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Refactor1.Model;
-using Refactor1.Service.Request;
 using System;
 using System.Net.Http;
 using System.Text;
@@ -8,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Refactor1.Service
 {
-    public abstract class BaseServiceManager : IServiceManager
+    public abstract class BaseServiceManager
     {
-        protected virtual string BaseUrl => "https://ft-ductuu138.oraclecloud2.dreamfactory.com/";
+        protected abstract string BaseUrl { get; }
 
         private HttpClient _client;
 
@@ -19,24 +17,7 @@ namespace Refactor1.Service
             _client = new HttpClient(new ModernHttpClient.NativeMessageHandler());
         }
 
-        public async Task<User> Authenticate(string email, string password)
-        {
-            var url = BaseUrl + "api/v2/user/session";
-            var request = new AuthenticationRequest() { Email = email, Password = password };
-            var response = await InvokeService(HttpMethod.Post, url, request);
-            if (response.IsSuccessStatusCode)
-            {
-                var responseBody = await response.Content.ReadAsStringAsync();
-                var user = JsonConvert.DeserializeObject<User>(responseBody);
-                return user;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        private async Task<HttpResponseMessage> InvokeService(HttpMethod method, string url, object bodyObject = null)
+        public async Task<HttpResponseMessage> InvokeService(HttpMethod method, string url, object bodyObject = null)
         {
             if (HasNetworkConnection())
             {
