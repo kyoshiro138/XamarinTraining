@@ -18,33 +18,31 @@ namespace Refactor1
         public class AndroidClient
         {
             public async void RunLoginForm()
-            {
-                var userManager = new UserManager(new DroidServiceManager());
-                var viewModel = new LoginViewModel(userManager);
+            {                 
                 Console.WriteLine("Android Login Form");
-                await HandleLogin(viewModel);
+                await HandleLogin();
             }
         }
 
         public class iOSClient
         {
             public async void RunLoginForm()
-            {
-                var userManager = new UserManager(new iOSServiceManager());
-                var viewModel = new LoginViewModel(userManager);
+            {             
                 Console.WriteLine("iOS Login Form");
-                await HandleLogin(viewModel);
+                await HandleLogin();
             }
         }
 
-        public static async Task HandleLogin(LoginViewModel viewModel)
+        public static async Task HandleLogin()
         {
+            var userManager = new UserManager(new LoginAuth());
+            var viewModel = new LoginViewModel(userManager);
+
             Console.Write("Email:");
             viewModel.Email = Console.ReadLine();
             Console.Write("Password:");
             viewModel.Password = Console.ReadLine();
             await viewModel.Login();
-        }
-
+        }         
     }
 }

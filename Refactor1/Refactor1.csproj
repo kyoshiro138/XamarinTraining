@@ -57,6 +57,7 @@
     <Compile Include="Service\iOSServiceManager.cs" />
     <Compile Include="Service\IServiceManager.cs" />
     <Compile Include="Service\Request\AuthenticationRequest.cs" />
+    <Compile Include="Service\PlatformAuth.cs" />
     <Compile Include="ViewModel\LoginViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
