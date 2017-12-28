@@ -10,7 +10,7 @@ namespace Refactor1.Service
 {
     public abstract class BaseServiceManager
     {
-        protected abstract string BaseUrl { get; }
+        protected string BaseUrl { get { return "https://ft-ductuu138.oraclecloud2.dreamfactory.com/"; } }
 
         private HttpClient _client;
 
@@ -19,7 +19,7 @@ namespace Refactor1.Service
             _client = new HttpClient(new ModernHttpClient.NativeMessageHandler());
         }
 
-        public async Task<HttpResponseMessage> InvokeService(HttpMethod method, string url, object bodyObject = null)
+        public async Task<HttpResponseMessage> InvokeService(HttpMethod method, string ContentUrl, object bodyObject = null)
         {
             if (HasNetworkConnection())
             {
@@ -27,7 +27,7 @@ namespace Refactor1.Service
                 HttpResponseMessage responseMessage = null;
                 try
                 {
-                    var requestMessage = new HttpRequestMessage(method, url);
+                    var requestMessage = new HttpRequestMessage(method, BaseUrl + ContentUrl);
                     if (bodyObject != null)
                     {
                         var bodyString = JsonConvert.SerializeObject(bodyObject);
@@ -48,6 +48,7 @@ namespace Refactor1.Service
                 return null;
             }
         }
+
 
         protected abstract void ShowLoadingProgress();
 

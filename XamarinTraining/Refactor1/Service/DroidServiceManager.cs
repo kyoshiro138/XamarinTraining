@@ -12,13 +12,9 @@ namespace Refactor1.Service
 {
     public class DroidServiceManager : BaseServiceManager, IServiceManager
     {
-        protected override string BaseUrl => "https://ft-ductuu138.oraclecloud2.dreamfactory.com/";
-
-        public async Task<User> Authenticate(string email, string password)
+        public async Task<User> Authenticate(AuthenticationRequest request)
         {
-            var url = BaseUrl + "api/v2/user/session";
-            var request = new AuthenticationRequest() { Email = email, Password = password };
-            var response = await InvokeService(HttpMethod.Post, url, request);
+            var response = await InvokeService(HttpMethod.Post, ApiConstants.Authenticate, request);
             if (response.IsSuccessStatusCode)
             {
                 var responseBody = await response.Content.ReadAsStringAsync();
