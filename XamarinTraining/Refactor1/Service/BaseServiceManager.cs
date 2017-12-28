@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
+using Refactor1.Helper;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +10,7 @@ namespace Refactor1.Service
     public abstract class BaseServiceManager
     {
         protected abstract string BaseUrl { get; }
+        public abstract IHelper Helper { get; }
 
         private HttpClient _client;
 
@@ -21,9 +21,9 @@ namespace Refactor1.Service
 
         public async Task<HttpResponseMessage> InvokeService(HttpMethod method, string url, object bodyObject = null)
         {
-            if (HasNetworkConnection())
+            if (Helper.HasNetworkConnection())
             {
-                ShowLoadingProgress();
+                Helper.ShowLoadingProgress();
                 HttpResponseMessage responseMessage = null;
                 try
                 {
@@ -39,7 +39,7 @@ namespace Refactor1.Service
                 {
                     Console.WriteLine(ex.Message);
                 }
-                HideLoadingProgress();
+                Helper.HideLoadingProgress();
                 return responseMessage;
             }
             else
@@ -48,11 +48,5 @@ namespace Refactor1.Service
                 return null;
             }
         }
-
-        protected abstract void ShowLoadingProgress();
-
-        protected abstract void HideLoadingProgress();
-
-        protected abstract bool HasNetworkConnection();
     }
 }

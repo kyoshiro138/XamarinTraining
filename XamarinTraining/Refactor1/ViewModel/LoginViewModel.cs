@@ -1,8 +1,5 @@
 ﻿using Refactor1.Manager;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Refactor1.ViewModel
@@ -22,22 +19,28 @@ namespace Refactor1.ViewModel
 
         public async Task Login()
         {
-            if(!string.IsNullOrEmpty(Email) && !string.IsNullOrEmpty(Password))
+            if (!IsValid())
             {
-                var user = await _userManager.Authenticate(Email, Password);
-                if(user != null)
-                {
-                    Console.WriteLine($"{user.DisplayName} has signed in.");
-                }
-                else
-                {
-                    Console.WriteLine("User not found.");
-                }
+                return;
+            }
+            var user = await _userManager.Authenticate(Email, Password);
+            if (user != null)
+            {
+                Console.WriteLine($"{user.DisplayName} has signed in.");
             }
             else
             {
-                Console.WriteLine("Email and password are required.");
+                Console.WriteLine("User not found.");
             }
+        }
+
+        public bool IsValid()
+        {
+            if (string.IsNullOrEmpty(Email) || string.IsNullOrEmpty(Password))
+            {
+                return false;
+            }
+            return true;
         }
     }
 }
