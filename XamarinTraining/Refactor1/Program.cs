@@ -46,6 +46,7 @@ namespace Refactor1
                 viewModel.Password = Console.ReadLine();
                 await viewModel.Login();
             }
+
         }
     }
 }
