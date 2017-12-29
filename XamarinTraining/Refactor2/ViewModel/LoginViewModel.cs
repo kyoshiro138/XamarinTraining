@@ -15,7 +15,7 @@ namespace Refactor2.ViewModel
 
         public string Password { get; set; }
 
-        public UserManager _userManager;
+        private readonly UserManager _userManager;
 
         public LoginViewModel(UserManager userManager)
         {
@@ -30,7 +30,6 @@ namespace Refactor2.ViewModel
                 if(user != null)
                 {
                     Console.WriteLine($"{user.DisplayName} has signed in.");
-                    SaveToken(user.Token);
                     onLoginSuccess?.Invoke();
                 }
                 else
@@ -42,12 +41,6 @@ namespace Refactor2.ViewModel
             {
                 Console.WriteLine("Email and password are required.");
             }
-        }
-
-        private void SaveToken(string token)
-        {
-            var serviceManager = SimpleIoc.Default.GetInstance<IServiceManager>();
-            serviceManager.SaveToken(token);
         }
     }
 }

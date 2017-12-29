@@ -27,13 +27,17 @@ namespace Refactor2
             {
                 Console.WriteLine("Application Launched");
                 Register();
-                var loginForm = new LoginForm();
+                var loginForm = new LoginForm(()=>
+                {
+                    var mainForm = new MainForm();
+                    mainForm.Show();
+                });
                 loginForm.Show();
             }
 
             private void Register()
             {
-                var serviceManager = new ApplicationServiceManager("https://ft-ductuu138.oraclecloud2.dreamfactory.com/", new AppLoadingProgressor(), new AppNetworkDetector());
+                var serviceManager = new ApplicationServiceManager(new AppLoadingProgressor(), new AppNetworkDetector());
 
                 ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
                 SimpleIoc.Default.Register<IServiceManager>(() => serviceManager);
@@ -42,6 +46,13 @@ namespace Refactor2
 
         public class LoginForm
         {
+            private Action _onLoginSuccess;
+
+            public LoginForm(Action onLoginSuccess)
+            {
+                _onLoginSuccess = onLoginSuccess;
+            }
+
             public async void Show()
             {
                 Console.WriteLine("Login Form Showed");
@@ -57,8 +68,7 @@ namespace Refactor2
 
             private void HandleLoginSuccess()
             {
-                var mainForm = new MainForm();
-                mainForm.Show();
+                _onLoginSuccess?.Invoke();
             }
         }
 

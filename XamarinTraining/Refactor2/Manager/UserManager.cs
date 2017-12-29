@@ -26,7 +26,12 @@ namespace Refactor2.Manager
                 Email = email,
                 Password = password
             };
-            return await _serviceManager.Authenticate(request);
+            var user = await _serviceManager.Authenticate(request);
+            if (user != null)
+            {
+                _serviceManager.SaveToken(user.Token);
+            }
+            return user;
         }
     }
 }

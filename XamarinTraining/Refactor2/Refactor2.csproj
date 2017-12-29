@@ -74,8 +74,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\ApplicationServiceManager.cs" />
     <Compile Include="Service\BaseServiceManager.cs" />
+    <Compile Include="Service\Interface\IContentType.cs" />
     <Compile Include="Service\Interface\ILoadingProgressor.cs" />
     <Compile Include="Service\Interface\INetworkDetector.cs" />
+    <Compile Include="Service\Interface\IRequestContent.cs" />
     <Compile Include="Service\Interface\IServiceManager.cs" />
     <Compile Include="Service\Request\AuthenticationRequest.cs" />
     <Compile Include="Service\Response\NewsResponse.cs" />
@@ -89,6 +91,9 @@
   <ItemGroup>
     <Content Include="HowToRun.txt" />
     <Content Include="WhatToDo.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Helper\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

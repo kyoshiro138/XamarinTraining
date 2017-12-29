@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Refactor2.Service.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,17 +11,15 @@ namespace Refactor2.Service
 {
     public abstract class BaseServiceManager
     {
-        private string _baseUrl;
-        private HttpClient _client;
+        protected abstract string BaseUrl { get; }
         private ILoadingProgressor _loadingProgressor;
         private INetworkDetector _networkDetector;
 
-        protected HttpClient Client { get { return _client; } }
+        protected HttpClient Client { get; private set; }
 
-        public BaseServiceManager(string baseUrl, ILoadingProgressor loadingProgressor, INetworkDetector networkDetector)
+        public BaseServiceManager(ILoadingProgressor loadingProgressor, INetworkDetector networkDetector)
         {
-            _client = new HttpClient(new ModernHttpClient.NativeMessageHandler());
-            _baseUrl = baseUrl;
+            Client = new HttpClient(new ModernHttpClient.NativeMessageHandler());
             _loadingProgressor = loadingProgressor;
             _networkDetector = networkDetector;
         }
@@ -33,12 +32,13 @@ namespace Refactor2.Service
                 HttpResponseMessage responseMessage = null;
                 try
                 {
-                    var requestMessage = new HttpRequestMessage(method, _baseUrl + methodUrl);
+                    var requestMessage = new HttpRequestMessage(method, BaseUrl + methodUrl);
                     if (bodyObject != null)
                     {
-                        requestMessage.Content = CreateRequestBodyContent(bodyObject);
+                        var requestContentFromJson = new RequestContentFromJson();
+                        requestMessage.Content = requestContentFromJson.CreateRequestBodyContent(bodyObject);
                     }
-                    responseMessage = await _client.SendAsync(requestMessage);
+                    responseMessage = await Client.SendAsync(requestMessage);
                 }
                 catch (Exception ex)
                 {
@@ -52,12 +52,6 @@ namespace Refactor2.Service
                 Console.WriteLine("No network connection.");
                 return null;
             }
-        }
-
-        private HttpContent CreateRequestBodyContent(object bodyObject)
-        {
-            var bodyString = JsonConvert.SerializeObject(bodyObject);
-            return new StringContent(bodyString, Encoding.UTF8, "application/json");
         }
     }
 }
