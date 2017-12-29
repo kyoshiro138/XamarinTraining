@@ -1,0 +1,9 @@
+﻿1. Login with one of these emails:
+test@gmail.com
+duy.truong@gmail.com
+hing.luong@gmail.com
+hieu.trinh@gmail.com
+an.ngo@gmail.com
+password is "123456", the same for all
+
+2. It will goes to main form and get news from server
