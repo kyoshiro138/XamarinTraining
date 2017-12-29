@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Refactor2.Service.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,19 +11,21 @@ namespace Refactor2.Service
 {
     public abstract class BaseServiceManager
     {
-        private string _baseUrl;
+        protected abstract string BaseUrl { get; }
+
         private HttpClient _client;
         private ILoadingProgressor _loadingProgressor;
         private INetworkDetector _networkDetector;
+        private IParser _parser;
 
         protected HttpClient Client { get { return _client; } }
 
-        public BaseServiceManager(string baseUrl, ILoadingProgressor loadingProgressor, INetworkDetector networkDetector)
+        public BaseServiceManager(ILoadingProgressor loadingProgressor, INetworkDetector networkDetector, IParser parser)
         {
             _client = new HttpClient(new ModernHttpClient.NativeMessageHandler());
-            _baseUrl = baseUrl;
             _loadingProgressor = loadingProgressor;
             _networkDetector = networkDetector;
+            _parser = parser;
         }
 
         public async Task<HttpResponseMessage> InvokeService(HttpMethod method, string methodUrl, object bodyObject = null)
@@ -33,7 +36,7 @@ namespace Refactor2.Service
                 HttpResponseMessage responseMessage = null;
                 try
                 {
-                    var requestMessage = new HttpRequestMessage(method, _baseUrl + methodUrl);
+                    var requestMessage = new HttpRequestMessage(method, BaseUrl + methodUrl);
                     if (bodyObject != null)
                     {
                         requestMessage.Content = CreateRequestBodyContent(bodyObject);
@@ -54,9 +57,16 @@ namespace Refactor2.Service
             }
         }
 
+        protected async Task<T> Deserialize<T>(HttpContent content)
+        {
+            var responseBody = await content.ReadAsStringAsync();
+            var responseObject = _parser.DeserializeObject<T>(responseBody);
+            return responseObject;
+        }
+
         private HttpContent CreateRequestBodyContent(object bodyObject)
         {
-            var bodyString = JsonConvert.SerializeObject(bodyObject);
+            var bodyString = _parser.SerializeObject(bodyObject);
             return new StringContent(bodyString, Encoding.UTF8, "application/json");
         }
     }

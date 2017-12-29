@@ -9,7 +9,7 @@ namespace Refactor2.ViewModel
 {
     class MainViewModel
     {
-        public NewsManager _newsManager;
+        private readonly NewsManager _newsManager;
 
         public MainViewModel(NewsManager newsManager)
         {

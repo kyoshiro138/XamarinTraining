@@ -12,42 +12,41 @@ namespace Refactor2.ViewModel
     public class LoginViewModel
     {
         public string Email { get; set; }
-
         public string Password { get; set; }
 
-        public UserManager _userManager;
+        private readonly UserManager _userManager;
 
         public LoginViewModel(UserManager userManager)
         {
             _userManager = userManager;
         }
 
-        public async Task Login(Action onLoginSuccess)
+        public async Task<bool> Login()
         {
-            if(!string.IsNullOrEmpty(Email) && !string.IsNullOrEmpty(Password))
+            if(IsValidate())
             {
-                var user = await _userManager.Authenticate(Email, Password);
-                if(user != null)
+                var isSuccess = await _userManager.Login(Email, Password);
+                if(isSuccess)
                 {
-                    Console.WriteLine($"{user.DisplayName} has signed in.");
-                    SaveToken(user.Token);
-                    onLoginSuccess?.Invoke();
+                    Console.WriteLine($"{_userManager.CurrentUser.DisplayName} has signed in.");
+                    _userManager.SaveToken();
                 }
                 else
                 {
                     Console.WriteLine("User not found.");
                 }
+                return isSuccess;
             }
             else
             {
                 Console.WriteLine("Email and password are required.");
             }
+            return false;
         }
 
-        private void SaveToken(string token)
+        private bool IsValidate()
         {
-            var serviceManager = SimpleIoc.Default.GetInstance<IServiceManager>();
-            serviceManager.SaveToken(token);
+            return !string.IsNullOrEmpty(Email) && !string.IsNullOrEmpty(Password);
         }
     }
 }

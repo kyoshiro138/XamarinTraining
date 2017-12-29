@@ -9,18 +9,15 @@ using System.Threading.Tasks;
 
 namespace Refactor2.Manager
 {
-    public class NewsManager
+    public class NewsManager : BaseManager
     {
-        private readonly IServiceManager _serviceManager;
-
-        public NewsManager()
+        public NewsManager(IServiceManager _serviceManager) : base(_serviceManager)
         {
-            _serviceManager = SimpleIoc.Default.GetInstance<IServiceManager>();
         }
 
         public async Task<List<News>> GetNews()
         {
-            return await _serviceManager.GetNews();
+            return await ServiceManager.GetNews();
         }
     }
 }

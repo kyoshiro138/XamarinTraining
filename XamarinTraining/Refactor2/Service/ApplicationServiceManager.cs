@@ -8,6 +8,7 @@ using Refactor2.Service.Request;
 using System.Net.Http;
 using Newtonsoft.Json;
 using Refactor2.Service.Response;
+using Refactor2.Service.Interface;
 
 namespace Refactor2.Service
 {
@@ -16,8 +17,10 @@ namespace Refactor2.Service
         private string AuthenticateUrl = "api/v2/user/session";
         private string NewsUrl = "api/v2/db/_table/news";
 
-        public ApplicationServiceManager(string baseUrl, ILoadingProgressor loadingProgressor, INetworkDetector networkDetector) 
-            : base(baseUrl, loadingProgressor, networkDetector)
+        protected override string BaseUrl => "https://ft-ductuu138.oraclecloud2.dreamfactory.com/";
+
+        public ApplicationServiceManager(ILoadingProgressor loadingProgressor, INetworkDetector networkDetector, IParser parser) 
+            : base(loadingProgressor, networkDetector, parser)
         {
             Client.DefaultRequestHeaders.Add("X-DreamFactory-Api-Key", "36fda24fe5588fa4285ac6c6c2fdfbdb6b6bc9834699774c9bf777f706d05a88");
         }
@@ -27,7 +30,7 @@ namespace Refactor2.Service
             var response = await InvokeService(HttpMethod.Post, AuthenticateUrl, request);
             if (response.IsSuccessStatusCode)
             {
-                return await DeserializeUser(response.Content);
+                return await Deserialize<User>(response.Content);
             }
             else
             {
@@ -40,7 +43,7 @@ namespace Refactor2.Service
             var response = await InvokeService(HttpMethod.Get, NewsUrl);
             if (response.IsSuccessStatusCode)
             {
-                var responseData = await DeserializeNews(response.Content);
+                var responseData = await Deserialize<NewsResponse>(response.Content);
                 return responseData != null ? responseData.NewsList : null;
             }
             else
@@ -52,20 +55,6 @@ namespace Refactor2.Service
         public void SaveToken(string token)
         {
             Client.DefaultRequestHeaders.Add("X-DreamFactory-Session-Token", token);
-        }
-
-        private async Task<User> DeserializeUser(HttpContent content)
-        {
-            var responseBody = await content.ReadAsStringAsync();
-            var user = JsonConvert.DeserializeObject<User>(responseBody);
-            return user;
-        }
-
-        private async Task<NewsResponse> DeserializeNews(HttpContent content)
-        {
-            var responseBody = await content.ReadAsStringAsync();
-            var response = JsonConvert.DeserializeObject<NewsResponse>(responseBody);
-            return response;
         }
     }
 }
