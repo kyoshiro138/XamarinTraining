@@ -1,5 +1,4 @@
 ﻿using GalaSoft.MvvmLight.Ioc;
-using Refactor2.Model;
 using Refactor2.Service;
 using System;
 using System.Collections.Generic;
@@ -9,11 +8,13 @@ using System.Threading.Tasks;
 
 namespace Refactor2.Manager
 {
-	public class NewsManager : BaseManager
+	public abstract class BaseManager
 	{
-		public async Task<List<News>> GetNews()
+		protected readonly IServiceManager _serviceManager;
+
+		public BaseManager()
 		{
-			return await _serviceManager.GetNews();
+			_serviceManager = SimpleIoc.Default.GetInstance<IServiceManager>();
 		}
 	}
 }

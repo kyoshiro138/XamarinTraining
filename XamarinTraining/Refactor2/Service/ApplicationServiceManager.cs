@@ -11,61 +11,49 @@ using Refactor2.Service.Response;
 
 namespace Refactor2.Service
 {
-    public class ApplicationServiceManager : BaseServiceManager, IServiceManager
-    {
-        private string AuthenticateUrl = "api/v2/user/session";
-        private string NewsUrl = "api/v2/db/_table/news";
+	public class ApplicationServiceManager : BaseServiceManager, IServiceManager
+	{
+		private const string AuthenticateUrl = "api/v2/user/session";
+		private const string NewsUrl = "api/v2/db/_table/news";
 
-        public ApplicationServiceManager(string baseUrl, ILoadingProgressor loadingProgressor, INetworkDetector networkDetector) 
-            : base(baseUrl, loadingProgressor, networkDetector)
-        {
-            Client.DefaultRequestHeaders.Add("X-DreamFactory-Api-Key", "36fda24fe5588fa4285ac6c6c2fdfbdb6b6bc9834699774c9bf777f706d05a88");
-        }
+		public ApplicationServiceManager(string baseUrl, ILoadingProgressor loadingProgressor, INetworkDetector networkDetector, IParser parser)
+			: base(baseUrl, loadingProgressor, networkDetector, parser)
+		{
+			Client.DefaultRequestHeaders.Add("X-DreamFactory-Api-Key", "36fda24fe5588fa4285ac6c6c2fdfbdb6b6bc9834699774c9bf777f706d05a88");
+		}
 
-        public async Task<User> Authenticate(AuthenticationRequest request)
-        {
-            var response = await InvokeService(HttpMethod.Post, AuthenticateUrl, request);
-            if (response.IsSuccessStatusCode)
-            {
-                return await DeserializeUser(response.Content);
-            }
-            else
-            {
-                return null;
-            }
-        }
+		public async Task<User> Authenticate(AuthenticationRequest request)
+		{
+			var response = await InvokeService(HttpMethod.Post, AuthenticateUrl, request);
 
-        public async Task<List<News>> GetNews()
-        {
-            var response = await InvokeService(HttpMethod.Get, NewsUrl);
-            if (response.IsSuccessStatusCode)
-            {
-                var responseData = await DeserializeNews(response.Content);
-                return responseData != null ? responseData.NewsList : null;
-            }
-            else
-            {
-                return null;
-            }
-        }
+			if (response.IsSuccessStatusCode)
+			{
+				return await Parser.DeserializeObject<User>(response.Content);
+			}
+			else
+			{
+				return null;
+			}
+		}
 
-        public void SaveToken(string token)
-        {
-            Client.DefaultRequestHeaders.Add("X-DreamFactory-Session-Token", token);
-        }
+		public async Task<List<News>> GetNews()
+		{
+			var response = await InvokeService(HttpMethod.Get, NewsUrl);
 
-        private async Task<User> DeserializeUser(HttpContent content)
-        {
-            var responseBody = await content.ReadAsStringAsync();
-            var user = JsonConvert.DeserializeObject<User>(responseBody);
-            return user;
-        }
+			if (response.IsSuccessStatusCode)
+			{
+				var responseData = await Parser.DeserializeObject<NewsResponse>(response.Content);
+				return responseData != null ? responseData.NewsList : null;
+			}
+			else
+			{
+				return null;
+			}
+		}
 
-        private async Task<NewsResponse> DeserializeNews(HttpContent content)
-        {
-            var responseBody = await content.ReadAsStringAsync();
-            var response = JsonConvert.DeserializeObject<NewsResponse>(responseBody);
-            return response;
-        }
-    }
+		public void SaveToken(string token)
+		{
+			Client.DefaultRequestHeaders.Add("X-DreamFactory-Session-Token", token);
+		}
+	}
 }

@@ -10,23 +10,21 @@ using System.Threading.Tasks;
 
 namespace Refactor2.Manager
 {
-    public class UserManager
-    {
-        private readonly IServiceManager _serviceManager;
+	public class UserManager : BaseManager
+	{
+		public async Task<User> Authenticate(string email, string password)
+		{
+			var request = new AuthenticationRequest()
+			{
+				Email = email,
+				Password = password
+			};
+			return await _serviceManager.Authenticate(request);
+		}
 
-        public UserManager()
-        {
-            _serviceManager = SimpleIoc.Default.GetInstance<IServiceManager>();
-        }
-
-        public async Task<User> Authenticate(string email,string password)
-        {
-            var request = new AuthenticationRequest()
-            {
-                Email = email,
-                Password = password
-            };
-            return await _serviceManager.Authenticate(request);
-        }
-    }
+		public void SaveToken(string token)
+		{
+			_serviceManager.SaveToken(token);
+		}
+	}
 }
